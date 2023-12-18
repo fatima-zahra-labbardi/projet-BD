@@ -21,19 +21,23 @@ if response_eeentraineur.status_code == 200 and response_hhhoraire.status_code =
     df_eeentraineur = pd.DataFrame(response_eeentraineur.json()["items"])
     df_hhhoraire = pd.DataFrame(response_hhhoraire.json()["items"])
 
-    # Vous pouvez procéder à votre traitement ou manipulation des données ici si nécessaire
 
     # Création des graphiques avec Plotly Express
-    fig_bar = px.bar(df_hhhoraire, x="heure_de_debut", title="Nombre de séances par plage horaire")
+    fig_bar = px.bar(df_hhhoraire, y="heure_de_debut", title="Nombre de séances par plage horaire", color_discrete_sequence=['pink'])
     fig_line = px.line(df_hhhoraire.groupby("jour").size().reset_index(name="nombre_seances"),
-                       x="jour", y="nombre_seances", title="Nombre de séances par jour de la semaine")
+                   x="jour", y="nombre_seances", title="Nombre de séances par jour de la semaine", color_discrete_sequence=['pink'])
 
-    # Ordonner les jours de la semaine
-    jours_ordre = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI", "DIMANCHE"]
-    fig_line.update_xaxes(categoryorder='array', categoryarray=jours_ordre)
+    fig_bar.update_layout(barmode='group', xaxis={'categoryorder': 'category ascending'})
+    fig_line.update_traces(mode='markers+lines')
+
 
     # Affichage des graphiques sur la page Streamlit
-    st.title("Graphiques sur les séances programmées")
+    # Titre stylisé
+    st.markdown(
+        "<h1 style='text-align: center; color: #ff69b4;'>Graphiques sur les séances programmées</h1>",
+        unsafe_allow_html=True
+    )
+
     st.plotly_chart(fig_bar)
     st.plotly_chart(fig_line)
 
